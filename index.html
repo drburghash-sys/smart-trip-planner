@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="مخطط سفر ذكي يحسب المدن والطقس والوجبات والفنادق والطيران والتكلفة التقريبية." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>مخطط السفر الذكي</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">SMART TRIP PLANNER</p>
+      <h1>مخطط السفر الذكي</h1>
+      <p class="sub">اختر الوجهة والفترة، ثم قارن المدن والطقس والتكاليف في شاشة واحدة.</p>
+    </div>
+    <button id="installBtn" class="ghost" type="button" hidden>تثبيت التطبيق</button>
+  </header>
+
+  <main class="shell">
+    <section class="panel form-panel">
+      <div class="section-title">
+        <h2>بيانات الرحلة</h2>
+        <span class="badge">العملة: ر.س</span>
+      </div>
+
+      <form id="tripForm">
+        <div class="grid two">
+          <label>مدينة المغادرة
+            <input id="origin" value="تبوك" autocomplete="off" />
+          </label>
+          <label>الدولة
+            <select id="country"></select>
+          </label>
+          <label>من
+            <input id="startDate" type="date" />
+          </label>
+          <label>إلى
+            <input id="endDate" type="date" />
+          </label>
+          <label>عدد المسافرين
+            <input id="travelers" type="number" min="1" max="12" value="2" />
+          </label>
+          <label>عدد الغرف
+            <input id="rooms" type="number" min="1" max="6" value="1" />
+          </label>
+          <label>فئة الفندق
+            <select id="stars">
+              <option value="3">3 نجوم</option>
+              <option value="4" selected>4 نجوم</option>
+              <option value="5">5 نجوم</option>
+            </select>
+          </label>
+          <label>نمط الصرف
+            <select id="spendStyle">
+              <option value="0.82">اقتصادي</option>
+              <option value="1" selected>متوسط</option>
+              <option value="1.35">مريح</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="cities-box">
+          <div class="section-title compact">
+            <h3>المدن المقترحة</h3>
+            <button id="autoDaysBtn" class="link-btn" type="button">توزيع الأيام تلقائيًا</button>
+          </div>
+          <div id="cityChooser" class="city-chooser"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" type="submit">احسب الرحلة</button>
+          <button id="saveBtn" class="secondary" type="button">حفظ الرحلة</button>
+        </div>
+        <p id="formMsg" class="hint" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="results">
+      <article class="panel total-card">
+        <div>
+          <p class="muted">التكلفة الإجمالية التقريبية</p>
+          <div id="grandTotal" class="grand">—</div>
+          <p id="tripSummary" class="muted">أدخل بيانات الرحلة ثم اضغط احسب.</p>
+        </div>
+        <div class="per-person">
+          <span>لكل مسافر</span>
+          <strong id="perPerson">—</strong>
+        </div>
+      </article>
+
+      <div class="cost-grid">
+        <article class="mini-card"><span>✈️ الطيران</span><strong id="flightCost">—</strong><small>تقديري حاليًا</small></article>
+        <article class="mini-card"><span>🏨 الفنادق</span><strong id="hotelCost">—</strong><small>حسب النجوم والمدينة</small></article>
+        <article class="mini-card"><span>🍽️ الوجبات</span><strong id="foodCost">—</strong><small>فطور + غداء + عشاء</small></article>
+        <article class="mini-card"><span>🚕 أنشطة وتنقل</span><strong id="localCost">—</strong><small>يوميًا حسب المدينة</small></article>
+      </div>
+
+      <article class="panel data-status">
+        <h3>حالة البيانات</h3>
+        <div class="status-row">
+          <span class="status live">الطقس: حي/تاريخي</span>
+          <span class="status estimate">الطيران: تقديري</span>
+          <span class="status estimate">الفنادق: تقديري</span>
+          <span class="status curated">الفعاليات: مختارة</span>
+        </div>
+        <p>سيتم فصل البيانات الحية عن التقديرية بوضوح حتى لا يظهر للمستخدم سعر تقريبي على أنه سعر حجز فعلي.</p>
+      </article>
+
+      <div id="cityResults" class="city-results"></div>
+
+      <article class="panel breakdown">
+        <div class="section-title compact">
+          <h3>تفصيل التكلفة</h3>
+          <button id="printBtn" class="link-btn" type="button">طباعة / PDF</button>
+        </div>
+        <div id="breakdownTable" class="table-wrap"></div>
+      </article>
+
+      <article class="panel saved-panel">
+        <div class="section-title compact">
+          <h3>الرحلات المحفوظة على هذا الجهاز</h3>
+          <button id="clearSavedBtn" class="link-btn danger" type="button">مسح الكل</button>
+        </div>
+        <div id="savedTrips" class="saved-list"></div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>النسخة الأولى — تصميم جاهز للتطوير وربط مزودي الطيران والفنادق والفعاليات لاحقًا عبر Backend آمن.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
