@@ -1,5 +1,25 @@
 (() => {
   const DATA = window.TRAVEL_DATA;
+  const CUSTOM_KEY = 'smartTripPlanner.customCountries';
+  let newCitySeq = 0;
+
+  function loadCustomCountries(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}');
+      Object.entries(saved).forEach(([k,v])=>{ if(v && v.name && Array.isArray(v.cities)) DATA[k]=v; });
+    }catch(e){}
+  }
+
+  function persistCustomCountries(){
+    const custom={};
+    Object.entries(DATA).forEach(([k,v])=>{ if(v?.custom) custom[k]=v; });
+    localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom));
+  }
+
+  function slugify(s){
+    const base=(s||'').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\u0600-\u06ff-]/g,'');
+    return base || ('custom-'+Date.now());
+  }
   const $ = (id) => document.getElementById(id);
   const state = { lastResult:null, installPrompt:null };
 
@@ -16,9 +36,134 @@
   }
   function toYMD(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-  function fillCountries(){
-    $('country').innerHTML = Object.entries(DATA).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
-    $('country').value='thailand';
+  function fillCountries(preferred){
+    const current=preferred || $('country')?.value || 'thailand';
+    $('country').innerHTML = Object.entries(DATA).map(([k,v])=>`<option value="${k}">${v.name}${v.custom?' ★':''}</option>`).join('');
+    $('country').value = DATA[current] ? current : (DATA.thailand?'thailand':Object.keys(DATA)[0]);
+    updateCustomCountryControls();
+  }
+
+  function updateCustomCountryControls(){
+    const c=DATA[$('country').value];
+    $('deleteCountryBtn').hidden=!c?.custom;
+  }
+
+  function openCountryEditor(){
+    $('countryEditor').hidden=false;
+    $('newCountryName').value='';
+    $('newCountryFlight').value='2000';
+    $('newCountryCities').innerHTML='';
+    $('countryEditorMsg').textContent='';
+    addCityRow();
+    $('newCountryName').focus();
+  }
+
+  function closeCountryEditor(){
+    $('countryEditor').hidden=true;
+    $('countryEditorMsg').textContent='';
+  }
+
+  function addCityRow(){
+    const n=++newCitySeq;
+    const wrap=document.createElement('div');
+    wrap.className='new-city-row';
+    wrap.dataset.row=String(n);
+    wrap.innerHTML=`
+      <div class="new-city-top">
+        <label>اسم المدينة
+          <input class="nc-name" placeholder="مثال: بالي" autocomplete="off" />
+        </label>
+        <label>الأيام
+          <input class="nc-days" type="number" min="1" max="14" value="3" />
+        </label>
+        <button class="remove-city-btn" type="button">حذف المدينة</button>
+      </div>
+      <div class="new-city-fields">
+        <label>فندق 3★ / ليلة<input class="nc-h3" type="number" min="0" value="180" /></label>
+        <label>فندق 4★ / ليلة<input class="nc-h4" type="number" min="0" value="300" /></label>
+        <label>فندق 5★ / ليلة<input class="nc-h5" type="number" min="0" value="600" /></label>
+        <label>تنقل يومي<input class="nc-transport" type="number" min="0" value="50" /></label>
+        <label>فطور / شخص<input class="nc-breakfast" type="number" min="0" value="25" /></label>
+        <label>غداء / شخص<input class="nc-lunch" type="number" min="0" value="45" /></label>
+        <label>عشاء / شخص<input class="nc-dinner" type="number" min="0" value="65" /></label>
+        <label>أنشطة يومية / شخص<input class="nc-activities" type="number" min="0" value="150" /></label>
+      </div>`;
+    wrap.querySelector('.remove-city-btn').addEventListener('click',()=>{
+      if($('newCountryCities').children.length<=1){ $('countryEditorMsg').textContent='يجب أن تحتوي الدولة على مدينة واحدة على الأقل.'; return; }
+      wrap.remove();
+    });
+    $('newCountryCities').appendChild(wrap);
+  }
+
+  async function geocodeCity(cityName,countryName){
+    try{
+      const q=encodeURIComponent(cityName);
+      const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=10&language=ar&format=json`);
+      if(!r.ok) return null;
+      const j=await r.json();
+      const hits=j.results||[];
+      const normalized=(countryName||'').trim().toLowerCase();
+      const hit=hits.find(x=>(x.country||'').toLowerCase()===normalized) || hits[0];
+      return hit ? {lat:hit.latitude,lon:hit.longitude} : null;
+    }catch(e){ return null; }
+  }
+
+  async function saveCustomCountry(){
+    const name=$('newCountryName').value.trim();
+    const flight=Math.max(0,Number($('newCountryFlight').value)||0);
+    const rows=[...$('newCountryCities').querySelectorAll('.new-city-row')];
+    if(!name){ $('countryEditorMsg').textContent='اكتب اسم الدولة.'; return; }
+    const validRows=rows.filter(r=>r.querySelector('.nc-name').value.trim());
+    if(!validRows.length){ $('countryEditorMsg').textContent='أضف مدينة واحدة على الأقل.'; return; }
+    $('saveCountryBtn').disabled=true;
+    $('saveCountryBtn').textContent='جاري الحفظ…';
+    $('countryEditorMsg').textContent='أبحث عن مواقع المدن لتفعيل الطقس…';
+
+    const key='custom-'+Date.now()+'-'+slugify(name);
+    const cities=[];
+    for(let i=0;i<validRows.length;i++){
+      const row=validRows[i], cityName=row.querySelector('.nc-name').value.trim();
+      const geo=await geocodeCity(cityName,name);
+      cities.push({
+        id:`city-${Date.now()}-${i}-${slugify(cityName)}`,
+        name:cityName,
+        lat:geo?.lat ?? null,
+        lon:geo?.lon ?? null,
+        recommendedDays:clamp(Number(row.querySelector('.nc-days').value)||3,1,14),
+        hotel:{
+          3:Math.max(0,Number(row.querySelector('.nc-h3').value)||0),
+          4:Math.max(0,Number(row.querySelector('.nc-h4').value)||0),
+          5:Math.max(0,Number(row.querySelector('.nc-h5').value)||0)
+        },
+        meals:[
+          Math.max(0,Number(row.querySelector('.nc-breakfast').value)||0),
+          Math.max(0,Number(row.querySelector('.nc-lunch').value)||0),
+          Math.max(0,Number(row.querySelector('.nc-dinner').value)||0)
+        ],
+        transport:Math.max(0,Number(row.querySelector('.nc-transport').value)||0),
+        activities:Math.max(0,Number(row.querySelector('.nc-activities').value)||0),
+        events:['أنشطة مضافة يدويًا ضمن الميزانية']
+      });
+    }
+    DATA[key]={name,code:'',flightBase:flight,season:Array(12).fill(1),cities,custom:true};
+    persistCustomCountries();
+    fillCountries(key);
+    renderCityChooser();
+    closeCountryEditor();
+    $('formMsg').textContent=`تمت إضافة ${name} وبها ${cities.length} مدينة. يمكنك استخدامها الآن في الحساب.`;
+    $('saveCountryBtn').disabled=false;
+    $('saveCountryBtn').textContent='حفظ الدولة';
+  }
+
+  function deleteCurrentCustomCountry(){
+    const key=$('country').value, c=DATA[key];
+    if(!c?.custom) return;
+    if(!window.confirm(`حذف ${c.name} من الدول المضافة؟`)) return;
+    delete DATA[key];
+    persistCustomCountries();
+    fillCountries('thailand');
+    renderCityChooser();
+    $('formMsg').textContent=`تم حذف الدولة المضافة: ${c.name}.`;
   }
 
   function renderCityChooser(){
@@ -66,6 +211,9 @@
   }
 
   async function getWeather(city,start,end){
+    if(!Number.isFinite(city.lat) || !Number.isFinite(city.lon)){
+      return {label:'—',note:'لم يُعثر على موقع المدينة للطقس',mode:'offline'};
+    }
     const today = new Date(); today.setHours(0,0,0,0);
     const startD = new Date(start+'T00:00:00');
     const diff = Math.round((startD-today)/86400000);
@@ -185,9 +333,14 @@
     $('installBtn').addEventListener('click',async()=>{ if(!state.installPrompt)return; state.installPrompt.prompt(); await state.installPrompt.userChoice; state.installPrompt=null; $('installBtn').hidden=true; });
   }
 
-  fillCountries(); seedDates(); renderCityChooser(); renderSaved(); setupPWA();
+  loadCustomCountries(); fillCountries(); seedDates(); renderCityChooser(); renderSaved(); setupPWA();
   $('tripForm').addEventListener('submit',calculate);
-  $('country').addEventListener('change',renderCityChooser);
+  $('country').addEventListener('change',()=>{renderCityChooser();updateCustomCountryControls();});
+  $('addCountryBtn').addEventListener('click',openCountryEditor);
+  $('closeCountryEditorBtn').addEventListener('click',closeCountryEditor);
+  $('addCityRowBtn').addEventListener('click',addCityRow);
+  $('saveCountryBtn').addEventListener('click',saveCustomCountry);
+  $('deleteCountryBtn').addEventListener('click',deleteCurrentCustomCountry);
   $('startDate').addEventListener('change',autoAllocateDays); $('endDate').addEventListener('change',autoAllocateDays);
   $('autoDaysBtn').addEventListener('click',autoAllocateDays); $('saveBtn').addEventListener('click',saveTrip); $('printBtn').addEventListener('click',()=>window.print());
   $('clearSavedBtn').addEventListener('click',()=>{localStorage.removeItem('smartTripPlanner.saved');renderSaved();});
