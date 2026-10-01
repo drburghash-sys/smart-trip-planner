@@ -1,0 +1,46 @@
+:root{
+  --bg:#f5f7fb;--card:#fff;--ink:#142033;--muted:#6b7280;--line:#dfe5ec;
+  --accent:#0f766e;--accent2:#115e59;--soft:#e8f5f3;--warn:#fff7ed;--danger:#b42318;
+}
+*{box-sizing:border-box}
+html{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{margin:0;min-height:100%;background:linear-gradient(180deg,#eef5f7 0,#f7f8fb 260px)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.topbar{max-width:1180px;margin:auto;padding:28px 18px 18px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.topbar h1{margin:3px 0 6px;font-size:clamp(1.8rem,4vw,2.6rem)}
+.eyebrow{margin:0;color:var(--accent);font-weight:800;letter-spacing:.08em;font-size:.75rem}
+.sub{margin:0;color:var(--muted);max-width:720px;line-height:1.7}
+.shell{max-width:1180px;margin:auto;padding:0 18px 28px;display:grid;grid-template-columns:390px minmax(0,1fr);gap:18px;align-items:start}
+.panel,.mini-card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:22px}
+.panel{padding:18px}.form-panel{position:sticky;top:12px}
+.section-title{display:flex;justify-content:space-between;gap:10px;align-items:center}.section-title h2,.section-title h3{margin:0}.section-title.compact{margin-bottom:10px}
+.badge{font-size:.78rem;padding:6px 9px;background:var(--soft);color:var(--accent2);border-radius:999px;font-weight:700}
+.grid.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+label{display:flex;flex-direction:column;gap:7px;font-size:.86rem;font-weight:700;color:#324055}
+input,select{width:100%;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);padding:11px 12px;min-height:46px;outline:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(15,118,110,.12)}
+.cities-box{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.city-chooser{display:grid;gap:8px}.city-pick{display:grid;grid-template-columns:auto 1fr 76px;gap:9px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fbfcfd}
+.city-pick input[type="checkbox"]{width:20px;min-height:20px;accent-color:var(--accent)}
+.city-pick input[type="number"]{min-height:38px;padding:7px 8px}
+.city-pick small{color:var(--muted);display:block;margin-top:2px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.primary,.secondary,.ghost{border-radius:13px;min-height:46px;padding:10px 14px;font-weight:800}
+.primary{border:1px solid var(--accent);background:var(--accent);color:#fff}.primary:hover{background:var(--accent2)}
+.secondary,.ghost{border:1px solid var(--line);background:#fff;color:var(--ink)}
+.link-btn{border:0;background:transparent;color:var(--accent);font-weight:800;padding:7px}.link-btn.danger{color:var(--danger)}
+.hint,.muted{color:var(--muted)}.hint{font-size:.8rem;line-height:1.6;min-height:20px}
+.results{display:grid;gap:14px}.total-card{display:flex;justify-content:space-between;align-items:center;gap:14px;background:linear-gradient(135deg,#fff,#f1f9f8)}
+.grand{font-weight:900;font-size:clamp(2rem,5vw,3.3rem);margin:3px 0}.per-person{min-width:140px;text-align:center;border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}.per-person span{display:block;color:var(--muted);font-size:.8rem}.per-person strong{display:block;margin-top:5px;font-size:1.15rem}
+.cost-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini-card{padding:14px;display:flex;flex-direction:column;gap:5px}.mini-card span{font-size:.86rem;color:#445267}.mini-card strong{font-size:1.2rem}.mini-card small{color:var(--muted)}
+.data-status h3{margin-top:0}.status-row{display:flex;flex-wrap:wrap;gap:7px}.status{padding:6px 9px;border-radius:999px;font-size:.75rem;font-weight:800}.status.live{background:#eaf7ee;color:#1f7a3f}.status.estimate{background:#fff3df;color:#9a5c00}.status.curated{background:#eef2ff;color:#4f46e5}.data-status p{margin-bottom:0;color:var(--muted);line-height:1.7;font-size:.88rem}
+.city-results{display:grid;gap:12px}.city-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}.city-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.city-head h3{margin:0}.weather-chip{text-align:left;padding:8px 10px;border-radius:12px;background:#f3f7fb;min-width:145px}.weather-chip strong{display:block}.weather-chip small{color:var(--muted)}
+.city-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.metric{background:#f7f9fb;border-radius:13px;padding:10px}.metric span{font-size:.75rem;color:var(--muted)}.metric strong{display:block;margin-top:3px}.events{margin:12px 0 0;padding:0 18px 0 0;color:#39485c;line-height:1.8}.events li::marker{color:var(--accent)}
+.table-wrap{overflow-x:auto}.cost-table{width:100%;border-collapse:collapse;min-width:580px}.cost-table th,.cost-table td{padding:11px;border-bottom:1px solid var(--line);text-align:right}.cost-table th{font-size:.78rem;color:var(--muted)}
+.saved-list{display:grid;gap:8px}.saved-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:13px}.saved-item small{display:block;color:var(--muted);margin-top:2px}.saved-item button{border:0;border-radius:10px;padding:8px 10px;background:var(--soft);color:var(--accent2);font-weight:800}
+.empty{color:var(--muted);font-size:.9rem;padding:12px 0}
+footer{max-width:1180px;margin:auto;padding:0 18px 30px;color:var(--muted);font-size:.82rem;line-height:1.7}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.form-panel{position:static}.cost-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.topbar{padding-top:18px}.grid.two{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.cost-grid{grid-template-columns:1fr 1fr}.city-metrics{grid-template-columns:1fr 1fr}.total-card{align-items:flex-start;flex-direction:column}.per-person{width:100%}.city-head{flex-direction:column}.weather-chip{width:100%;text-align:right}.topbar{flex-direction:column}.ghost{width:100%}}
+@media print{body{background:#fff}.form-panel,.saved-panel,.data-status,.topbar button,footer{display:none!important}.shell{display:block;max-width:none}.panel,.mini-card,.city-card{break-inside:avoid;box-shadow:none}.results{gap:10px}}
