@@ -44,3 +44,21 @@ footer{max-width:1180px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
 @media(max-width:900px){.shell{grid-template-columns:1fr}.form-panel{position:static}.cost-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.topbar{padding-top:18px}.grid.two{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.cost-grid{grid-template-columns:1fr 1fr}.city-metrics{grid-template-columns:1fr 1fr}.total-card{align-items:flex-start;flex-direction:column}.per-person{width:100%}.city-head{flex-direction:column}.weather-chip{width:100%;text-align:right}.topbar{flex-direction:column}.ghost{width:100%}}
 @media print{body{background:#fff}.form-panel,.saved-panel,.data-status,.topbar button,footer{display:none!important}.shell{display:block;max-width:none}.panel,.mini-card,.city-card{break-inside:avoid;box-shadow:none}.results{gap:10px}}
+
+.country-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.inline-action{border:0;background:transparent;color:var(--accent);font-size:.78rem;font-weight:800;padding:2px 0;text-align:right}
+.inline-action.danger{color:var(--danger)}
+.country-editor{margin-top:16px;padding:15px;border:1px solid #b9ded9;background:#f5fbfa;border-radius:18px}
+.country-editor[hidden]{display:none}
+.editor-note{margin:4px 0 0;color:var(--muted);font-size:.78rem;line-height:1.5}
+.city-builder-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 8px}
+.city-builder-head h4{margin:0}
+.new-country-cities{display:grid;gap:10px}
+.new-city-row{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px}
+.new-city-top{display:grid;grid-template-columns:minmax(0,1fr) 86px auto;gap:8px;align-items:end}
+.new-city-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.new-city-row label{font-size:.76rem}
+.remove-city-btn{border:0;background:#fff0ee;color:var(--danger);border-radius:11px;min-height:44px;padding:8px 10px;font-weight:800}
+.editor-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.editor-actions .primary{min-width:130px}
+@media(max-width:560px){.new-city-top{grid-template-columns:1fr 78px}.remove-city-btn{grid-column:1/-1}.new-city-fields{grid-template-columns:1fr 1fr}}
