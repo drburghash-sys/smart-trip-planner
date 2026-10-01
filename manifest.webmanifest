@@ -1,0 +1,11 @@
+{
+  "name":"مخطط السفر الذكي",
+  "short_name":"رحلتي",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f5f7fb",
+  "theme_color":"#0f172a",
+  "lang":"ar",
+  "dir":"rtl",
+  "icons":[{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
