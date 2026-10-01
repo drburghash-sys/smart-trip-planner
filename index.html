@@ -34,6 +34,10 @@
           </label>
           <label>الدولة
             <select id="country"></select>
+            <span class="country-actions">
+              <button id="addCountryBtn" class="inline-action" type="button">+ إضافة دولة</button>
+              <button id="deleteCountryBtn" class="inline-action danger" type="button" hidden>حذف المضافة</button>
+            </span>
           </label>
           <label>من
             <input id="startDate" type="date" />
@@ -62,6 +66,36 @@
             </select>
           </label>
         </div>
+
+        <section id="countryEditor" class="country-editor" hidden>
+          <div class="section-title compact">
+            <div>
+              <h3>إضافة دولة جديدة</h3>
+              <p class="editor-note">ستُحفظ على هذا الجهاز ويمكن اختيارها مباشرة في الرحلات.</p>
+            </div>
+            <button id="closeCountryEditorBtn" class="link-btn" type="button">إغلاق</button>
+          </div>
+
+          <div class="grid two">
+            <label>اسم الدولة
+              <input id="newCountryName" placeholder="مثال: إندونيسيا" autocomplete="off" />
+            </label>
+            <label>سعر الطيران التقريبي للفرد من مدينتك (ذهاب وعودة)
+              <input id="newCountryFlight" type="number" min="0" step="50" value="2000" />
+            </label>
+          </div>
+
+          <div class="city-builder-head">
+            <h4>مدن الدولة</h4>
+            <button id="addCityRowBtn" class="link-btn" type="button">+ إضافة مدينة أخرى</button>
+          </div>
+          <div id="newCountryCities" class="new-country-cities"></div>
+
+          <div class="editor-actions">
+            <button id="saveCountryBtn" class="primary" type="button">حفظ الدولة</button>
+            <span id="countryEditorMsg" class="hint" aria-live="polite"></span>
+          </div>
+        </section>
 
         <div class="cities-box">
           <div class="section-title compact">
